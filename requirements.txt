@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+aiokafka
+scikit-learn
+numpy
+pandas
+SQLAlchemy>=2.0
+psycopg2-binary
+redis>=4.5
+pydantic>=2.5
+pydantic-settings>=2.0
+python-dotenv
+httpx
+pytest
+pytest-asyncio
+joblib
+PyJWT
