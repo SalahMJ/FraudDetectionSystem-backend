@@ -39,7 +39,7 @@ async def get_flagged(
     return items
 
 
-@router.get("/{id}", response_model=TransactionDetail)
+@router.get("/tx/{id}", response_model=TransactionDetail)
 async def get_detail(
     id: str,
     db: Session = Depends(get_db),

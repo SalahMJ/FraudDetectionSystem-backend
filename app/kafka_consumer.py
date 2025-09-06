@@ -11,6 +11,8 @@ from app.models import Transaction, TransactionStatus
 from app.models.db import SessionLocal
 from app.services.cache import get_cache
 from datetime import datetime
+from app.services.inference import FraudModel
+from app.services import rules
 
 
 class KafkaConsumerService:
@@ -45,8 +47,7 @@ class KafkaConsumerService:
     async def _run_loop(self) -> None:
         assert self.consumer is not None
         cache = get_cache()
-        # Lazy import to keep tests lightweight when Kafka is disabled
-        from app.services.inference import FraudModel
+        # Lazy model load (kept here to defer heavy load until consumer runs)
         model = FraudModel.instance()
 
         try:
@@ -59,8 +60,10 @@ class KafkaConsumerService:
                     payload = json.loads(msg.value)
                 except Exception:
                     continue
-                # Compute inference synchronously (fast)
-                score, is_fraud = model.predict_from_transaction(payload)
+                # Rules + Model
+                rules_flag, _ = rules.evaluate_transaction(payload)
+                score, model_flag = model.predict_from_transaction(payload)
+                is_fraud = bool(rules_flag or model_flag)
                 tx_id = str(payload.get("transaction_id"))
 
                 # Upsert in DB in a thread to avoid blocking loop

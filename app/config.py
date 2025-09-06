@@ -55,6 +55,16 @@ class Settings(BaseSettings):
     MODEL_PATH: str = Field(default="/app/app/models/artifacts/iforest.pkl")
     IFOREST_THRESHOLD: float = Field(default=-0.2, description="Anomaly if score < threshold")
 
+    # Risk rules (simple pre-checks before ML)
+    ENABLE_RULES: bool = Field(default=True, description="Enable rule-based pre-checks")
+    AMOUNT_HARD_MAX: float = Field(
+        default=1_000_000.0, description="Amounts strictly above this are auto-flagged as fraud"
+    )
+    HIGH_RISK_CATEGORIES: str = Field(
+        default="jewelry,crypto",
+        description="Comma-separated categories considered high-risk; used by rules",
+    )
+
     # API
     LOG_LEVEL: str = Field(default="INFO")
     CORS_ORIGINS: str = Field(default="http://localhost:4200")
