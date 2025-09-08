@@ -33,7 +33,11 @@ SELECTED_ENV_FILE = ENV_FILE
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=ENV_FILE, env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=ENV_FILE,
+        env_file_encoding="utf-8",
+        extra="ignore",  # ignore unrelated env vars (e.g., API_URL used by scripts)
+    )
     # Core services
     POSTGRES_DSN: str = Field(
         default="postgresql+psycopg2://app:app@postgres:5432/frauddb",
@@ -68,6 +72,10 @@ class Settings(BaseSettings):
     # API
     LOG_LEVEL: str = Field(default="INFO")
     CORS_ORIGINS: str = Field(default="http://localhost:4200")
+
+    # GenAI (Gemini)
+    GEMINI_API_KEY: str = Field(default="", description="Google Gemini API key")
+    GEMINI_MODEL: str = Field(default="gemini-1.5-flash", description="Gemini model name")
 
     # pydantic-settings v2 uses model_config above
 
